@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_list_products"
+            android:icon="@drawable/carts"
+            android:title="Products"
+            android:visible="false" />
+        <item
+            android:id="@+id/item_list_orders"
+            android:icon="@drawable/orders"
+            android:title="Orders"
+            android:visible="false" />
+        <item
+            android:id="@+id/item_list_admin"
+            android:icon="@drawable/admin"
+            android:title="Admin"
+            android:visible="false" />
+    </group>
+</menu>
+<!--
+    <item android:title="Sub items">
+        <menu>
+            <item
+                android:icon="@drawable/ic_dashboard"
+                android:title="Sub item 1" />
+            <item
+                android:icon="@drawable/ic_forum"
+                android:title="Sub item 2" />
+        </menu>
+    </item>
+-->
