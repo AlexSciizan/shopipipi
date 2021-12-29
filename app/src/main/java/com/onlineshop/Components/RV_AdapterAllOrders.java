@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,20 +40,23 @@ public class RV_AdapterAllOrders extends RecyclerView.Adapter<RV_HolderAllOrders
     @Override
     public void onBindViewHolder(@NonNull RV_HolderAllOrders holder, int position) {/*final int position*/
         try {
-            holder.root.setOnLongClickListener(v -> {
-                if (holder.jenisLayout.equals("2")) {
-                    itemList.remove(holder.getAbsoluteAdapterPosition());
-                    notifyDataSetChanged();
-                    Toast.makeText(v.getContext(), "Berhasil menghapus " + holder.tv_nama.getText(), Toast.LENGTH_SHORT).show();
+            holder.root.setOnLongClickListener(v -> false);
+            holder.tv_total_price.setText("" + itemList.get(holder.getAbsoluteAdapterPosition()).getItem(0));
+            holder.tv_tanggal_order.setText("" + itemList.get(holder.getAbsoluteAdapterPosition()).getItem(1));
+            holder.btn_show_details.setText("Hide Details");
+            List<String[]> list = itemList.get(holder.getAbsoluteAdapterPosition()).getListStringArr();
+            for (int i = 0; i < list.size(); i++) {
+                holder.ll_child.addView(new Utility().LinearLayoutChild(holder.root.getContext(), list.get(i)));
+            }
+            holder.btn_show_details.setOnClickListener(v -> {
+                if (holder.ll_child.getVisibility() == View.VISIBLE) {
+                    holder.btn_show_details.setText("Show Details");
+                    holder.ll_child.setVisibility(View.GONE);
+                } else {
+                    holder.btn_show_details.setText("Hide Details");
+                    holder.ll_child.setVisibility(View.VISIBLE);
                 }
-                return false;
             });
-            holder.tv_kode.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(0));
-            holder.tv_nama.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(1));
-            holder.tv_stok.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(2));
-            holder.tv_harga.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(3));
-            holder.lokasi_di_store = itemList.get(holder.getAbsoluteAdapterPosition()).getItem(4);
-            holder.jenisLayout = itemList.get(holder.getAbsoluteAdapterPosition()).getItem(5);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -72,17 +74,15 @@ public class RV_AdapterAllOrders extends RecyclerView.Adapter<RV_HolderAllOrders
 
 class RV_HolderAllOrders extends RecyclerView.ViewHolder {
     LinearLayout root;
-    TextView tv_kode, tv_nama, tv_stok, tv_harga, btn_add;
-    String lokasi_di_store;
-    String jenisLayout;
-    boolean isClicked = false;
+    TextView tv_total_price, tv_tanggal_order, btn_show_details;
+    LinearLayout ll_child;
+
     RV_HolderAllOrders(View itemView) {
         super(itemView);
         root = itemView.findViewById(R.id.root);
-        tv_kode = itemView.findViewById(R.id.tv_kode);
-        tv_nama = itemView.findViewById(R.id.tv_nama);
-        tv_stok = itemView.findViewById(R.id.tv_stok);
-        tv_harga = itemView.findViewById(R.id.tv_harga);
-        btn_add = itemView.findViewById(R.id.btn_add);
+        tv_total_price = itemView.findViewById(R.id.tv_total_price);
+        tv_tanggal_order = itemView.findViewById(R.id.tv_tanggal_order);
+        btn_show_details = itemView.findViewById(R.id.btn_show_details);
+        ll_child = itemView.findViewById(R.id.ll_child);
     }
 }

@@ -5,15 +5,19 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +27,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.onlineshop.R;
-
-import java.util.List;
 
 public class Utility {
     public static GradientDrawable roundRecWhite(int rad, String strokeColor, String feelColor) {
@@ -38,6 +40,48 @@ public class Utility {
         gd.setCornerRadius(rad);
         gd.setStroke(1, strokeColor);
         return gd;
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    public static void setProducts(Context context, int no_urut, String[] arr) {
+        SharedPreferences sf = context.getSharedPreferences("list_poducts_" + no_urut, 0);
+        //ownerId, title, imageUrl, description, price, id
+        sf.edit().putString("ownerId", arr[0]);
+        sf.edit().putString("title", arr[1]);
+        sf.edit().putString("imageUrl", arr[2]);
+        sf.edit().putString("description", arr[3]);
+        sf.edit().putString("price", arr[4]);
+        sf.edit().putString("id", arr[5]);
+        sf.edit().apply();
+    }
+
+    public static String[] getProducts(Context context, int no_urut) {
+        SharedPreferences sf = context.getSharedPreferences("list_poducts", 0);
+        //ownerId, title, imageUrl, description, price, id
+        return new String[]{sf.getString("ownerId", ""),
+                sf.getString("title", ""),
+                sf.getString("imageUrl", ""),
+                sf.getString("description", ""),
+                sf.getString("price", ""),
+                sf.getString("id", "")};
+    }
+
+    public static void delProducts(Context context, int no_urut) {
+        SharedPreferences sf = context.getSharedPreferences("list_products_" + no_urut, Context.MODE_PRIVATE);
+        sf.edit().clear().apply();
+        sf.edit().clear().commit();
+    }
+
+    public LinearLayout LinearLayoutChild(Context context, String[] arg) {
+        LayoutInflater mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        @SuppressLint("InflateParams")
+        LinearLayout ll_main = (LinearLayout) mLayoutInflater.inflate(R.layout.cell_list_cart_shop, null);
+        ((TextView) ll_main.findViewById(R.id.list_item_qty)).setText(arg[0]);
+        ((TextView) ll_main.findViewById(R.id.list_item_product_name)).setText(arg[1]);
+        ((TextView) ll_main.findViewById(R.id.list_item_price)).setText(arg[2]);
+// ll_main.removeViewAt(3);
+        ll_main.findViewById(R.id.list_item_action).setVisibility(View.GONE);
+        return ll_main;
     }
 
     public static Dialog DialogLoading(Context context) {
@@ -63,86 +107,20 @@ public class Utility {
         return dialog;
     }
 
-    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
-    public static Dialog DialogAdd(Context context,
-                                   String kode,
-                                   String nama,
-                                   String stok,
-                                   String harga,
-                                   String lokasi_di_store,
-                                   String jenisLayout,
-                                   List<ItemObject> rowListItemCart,
-                                   int lokasi_di_cart,
-                                   RV_AdapterAllProd adapterCart) {
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_add);
-        TextView tv_nama_barang, btn_min, tv_jml_barang, btn_plus, tv_harga_barang, btn_ok;
-        tv_nama_barang = dialog.findViewById(R.id.tv_nama_barang);
-        btn_min = dialog.findViewById(R.id.btn_min);
-        tv_jml_barang = dialog.findViewById(R.id.tv_jml_barang);
-        btn_plus = dialog.findViewById(R.id.btn_plus);
-        tv_harga_barang = dialog.findViewById(R.id.tv_harga_barang);
-        btn_ok = dialog.findViewById(R.id.btn_ok);
-        tv_nama_barang.setText(nama);
-        tv_jml_barang.setText(stok);//angka
-        tv_harga_barang.setText(harga);//angka
-        btn_plus.setOnClickListener(v -> {
-            tv_jml_barang.setTag(Integer.parseInt("" + tv_jml_barang.getText()) + 1);
-            tv_jml_barang.setText("" + tv_jml_barang.getTag());
-            tv_harga_barang.setText("" + (
-                    Integer.parseInt("" + tv_jml_barang.getTag()) *
-                            Integer.parseInt(harga.replaceAll("\\.", ""))
-            ));
-            tv_harga_barang.setText("" + tv_harga_barang.getText().toString()
-                    .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)", "$1.$2$3$4.$5$6$7")
-                    .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)", "$1$2$3.$4$5$6")
-                    .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)", "$1$2.$3$4$5"));
-        });
-        btn_min.setOnClickListener(v -> {
-                    if (Integer.parseInt("" + tv_jml_barang.getText()) > 1) {
-                        tv_jml_barang.setTag(Integer.parseInt("" + tv_jml_barang.getText()) - 1);
-                        tv_jml_barang.setText("" + tv_jml_barang.getTag());
-                        tv_harga_barang.setText("" +
-                                (Integer.parseInt("" + tv_jml_barang.getTag()) *
-                                        Integer.parseInt("" + harga.replaceAll("\\.", "")))
-                        );
-                        tv_harga_barang.setText("" + tv_harga_barang.getText().toString()
-                                .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)", "$1.$2$3$4.$5$6$7")
-                                .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)(\\d)", "$1$2$3.$4$5$6")
-                                .replaceAll("(\\d)(\\d)(\\d)(\\d)(\\d)", "$1$2.$3$4$5"));
-                    }
-                }
-        );
-        btn_ok.setOnClickListener(v -> {
-            rowListItemCart.set(lokasi_di_cart,
-                    new ItemObject(new String[]{
-                            kode,
-                            nama,
-                            "" + tv_jml_barang.getText(),
-                            "" + tv_harga_barang.getText(),
-                            lokasi_di_store,
-                            jenisLayout
-                    }));
-            adapterCart.notifyDataSetChanged();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.setCancelable(true);
-        Window window = dialog.getWindow();
-        assert window != null;
-        window.setBackgroundDrawableResource(android.R.color.transparent);
-        WindowManager.LayoutParams lp = window.getAttributes();
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.x = 0;
-        lp.y = 0;
-        lp.gravity = Gravity.CENTER;
-        window.setAttributes(lp);
-        window.setGravity(Gravity.CENTER);
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        return dialog;
+    public static int getMyHeight(Context context, int percent) {
+        DisplayMetrics dm = new DisplayMetrics();
+        ((AppCompatActivity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int height = dm.heightPixels;
+        return (percent * height) / 100;
     }
+
+    public static int getMyWidth(Context context, int percent) {
+        DisplayMetrics dm = new DisplayMetrics();
+        ((AppCompatActivity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        return (percent * width) / 100;
+    }
+
     public static boolean cekKoneksi(Context context, boolean show_snackbar, boolean show_toast) {
         boolean konek = false; /*TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);*/
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE); /*NetworkInfo wifiNetwork = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);*/ /*NetworkInfo mobileNetwork = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);*/ /*if (wifiNetwork != null && wifiNetwork.isConnected()){*/ /*konek = true;*/ /*Logd("koneksi ", "cekKoneksi wifi " + konek);*/ /*} else if (mobileNetwork != null && mobileNetwork.isConnected()){*//*konek = true;Logd("koneksi ", "cekKoneksi hp " + konek);}NetworkInfo activeNetwork = cm.getActiveNetworkInfo();if (activeNetwork != null && activeNetwork.isConnected()){konek = true;Logd("koneksi ", "cekKoneksi jaringan aktif " + konek);}*/
@@ -160,6 +138,7 @@ public class Utility {
         }
         return konek;
     }
+
     static Snackbar noInternetSnackbar(Context context) {
         View my_view = ((AppCompatActivity) context).findViewById(android.R.id.content);
         final Snackbar snackbar = Snackbar.make(my_view, "No Connection Internet", Snackbar.LENGTH_INDEFINITE);
@@ -171,6 +150,7 @@ public class Utility {
         });
         return snackbar;
     }
+
     public static void setToolBar(Toolbar toolBar, AppCompatActivity appCompatActivity, boolean up, boolean home, boolean title) {
         appCompatActivity.setSupportActionBar(toolBar);
         if (appCompatActivity.getSupportActionBar() != null) {

@@ -15,6 +15,6 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             startActivity(new Intent(SplashActivity.this, com.onlineshop.MainActivity.class));
             finish();
-        }, 500);
+        }, 0);
     }
 }

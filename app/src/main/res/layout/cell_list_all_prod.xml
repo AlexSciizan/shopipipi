@@ -18,7 +18,7 @@
         <TextView
             android:id="@+id/tv_image"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="250dp"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:background="@drawable/home"
@@ -34,13 +34,30 @@
             android:textColor="@color/black"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_harga_barang"
-            android:layout_width="match_parent"
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="$ 50"
-            android:textColor="@color/black" />
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="$ "
+                android:textColor="#505050"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_harga_barang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0"
+                android:textColor="#505050"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,7 +81,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="View Detail"
+                android:text="To Cart"
                 android:textColor="@color/text_color" />
         </LinearLayout>
     </LinearLayout>

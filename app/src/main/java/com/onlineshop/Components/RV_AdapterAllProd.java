@@ -15,12 +15,13 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.koushikdutta.ion.Ion;
+import com.onlineshop.DetailProductsActivity;
 import com.onlineshop.R;
 
 import java.util.List;
 
 public class RV_AdapterAllProd extends RecyclerView.Adapter<RV_HolderAllProd> {
-    public List<ItemObject> itemList;
+    List<ItemObject> itemList;
 
     public RV_AdapterAllProd(List<ItemObject> itemLists) {
         itemList = itemLists;
@@ -52,9 +53,10 @@ public class RV_AdapterAllProd extends RecyclerView.Adapter<RV_HolderAllProd> {
                 return false;
             });
             Resources res = holder.root.getResources();
+            RoundedBitmapDrawable roundBMP;
             try {
                 Bitmap bitmap = Ion.with(holder.root.getContext()).load("GET", itemList.get(holder.getAbsoluteAdapterPosition()).getItem(0)).asBitmap().get();
-                RoundedBitmapDrawable roundBMP = RoundedBitmapDrawableFactory.create(res, bitmap);
+                roundBMP = RoundedBitmapDrawableFactory.create(res, bitmap);
                 roundBMP.setCornerRadius(25f);
                 holder.tv_image.setBackground(roundBMP);
             } catch (RuntimeException e) {
@@ -62,16 +64,34 @@ public class RV_AdapterAllProd extends RecyclerView.Adapter<RV_HolderAllProd> {
             }
             holder.tv_nama_barang.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(1));
             holder.tv_harga_barang.setText(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(2));
-            holder.btn_view_detail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
+            holder.description = itemList.get(holder.getAbsoluteAdapterPosition()).getItem(3);
+            holder.btn_view_detail.setOnClickListener(v -> {
+                new DetailProductsActivity(v.getContext(), holder.tv_image.getBackground(), new String[]{
+                        "" + holder.tv_nama_barang.getText(),
+                        "" + holder.tv_harga_barang.getText(),
+                        "" + holder.description
+                });
             });
-            holder.btn_to_cart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            holder.qty = itemList.get(holder.getAbsoluteAdapterPosition()).getItem(4);
+            holder.price = itemList.get(holder.getAbsoluteAdapterPosition()).getItem(5);
+            holder.btn_to_cart.setOnClickListener(v -> {
+                try {
+                    int qty = Integer.parseInt(holder.qty);
+                    holder.qty = "" + (++qty);
+                    holder.price = "" + qty * Float.parseFloat("" + holder.tv_harga_barang.getText());
 
+                    System.out.println(holder.qty + " " + holder.price);
+                    itemList.set(holder.getAbsoluteAdapterPosition(), new ItemObject(new String[]{
+                            itemList.get(holder.getAbsoluteAdapterPosition()).getItem(0),
+                            itemList.get(holder.getAbsoluteAdapterPosition()).getItem(1),
+                            itemList.get(holder.getAbsoluteAdapterPosition()).getItem(2),
+                            itemList.get(holder.getAbsoluteAdapterPosition()).getItem(3),
+                            holder.qty,
+                            holder.price
+                    }));
+                    System.out.println(itemList.get(holder.getAbsoluteAdapterPosition()).getItem(4) + " " + itemList.get(holder.getAbsoluteAdapterPosition()).getItem(5));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
                 }
             });
         } catch (Exception ex) {
@@ -92,6 +112,7 @@ public class RV_AdapterAllProd extends RecyclerView.Adapter<RV_HolderAllProd> {
 class RV_HolderAllProd extends RecyclerView.ViewHolder {
     LinearLayout root;
     TextView tv_image, tv_nama_barang, tv_harga_barang, btn_view_detail, btn_to_cart;
+    String description, qty, price;
 
     RV_HolderAllProd(View itemView) {
         super(itemView);

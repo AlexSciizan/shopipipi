@@ -2,7 +2,6 @@ package com.onlineshop;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,18 +15,19 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
-import com.onlineshop.Components.Api;
 
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     DrawerLayout mDrawerLayout;
     NavigationView navigationView;
     JsonObject jo = new JsonObject();
-    Fragment fragment;
-    FragmentManager fragmentManager;
+    public static Fragment fragmentMain;
+    public static FragmentManager fragmentManager;
     TextView btn_burger, tv_title, tv_cart;
+//    public static List<String[]> list_cart = new ArrayList<>();
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -38,12 +38,18 @@ public class MainActivity extends AppCompatActivity {
         tv_title = findViewById(R.id.tv_title);
         tv_cart = findViewById(R.id.tv_cart);
 
+        tv_cart.setOnClickListener(v ->
+        {
+            new CartShopActivity(v.getContext());
+        });
         mDrawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setVisibility(View.VISIBLE);
 
         fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragment_container, new ProductsFragment()).commit();
+//        fragmentManager.beginTransaction().replace(R.id.fragment_container, new ProductsFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, new OrdersFragment()).commit();
+
         tv_title.setText("All Products");
         LinearLayout ll = (LinearLayout) navigationView.getHeaderView(0);
         ((TextView) ll.getChildAt(1)).setText("Admin Name");
@@ -54,18 +60,18 @@ public class MainActivity extends AppCompatActivity {
                     menuItem -> {
                         menuItem.setChecked(true);
                         if (menuItem.getItemId() == R.id.item_list_products) {
-                            fragment = new ProductsFragment();
+                            fragmentMain = new ProductsFragment();
                             tv_title.setText("All Products");
                         }
                         if (menuItem.getItemId() == R.id.item_list_orders) {
-                            fragment = new OrdersFragment();
+                            fragmentMain = new OrdersFragment();
                             tv_title.setText("All Orders");
                         }
                         if (menuItem.getItemId() == R.id.item_list_admin) {
-                            fragment = new AdminFragment();
+                            fragmentMain = new AdminFragment();
                             tv_title.setText("Admin");
                         }
-                        fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit();
+                        fragmentManager.beginTransaction().replace(R.id.fragment_container, fragmentMain).commit();
                         mDrawerLayout.closeDrawers();
                         return true;
                     });
@@ -74,20 +80,7 @@ public class MainActivity extends AppCompatActivity {
             navigationView.getMenu().getItem(2).setVisible(true);
         }
         btn_burger.setOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-// NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-// NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-// NavigationUI.setupWithNavController(navigationView, navController);
-        try {
-            System.out.println("hasil nya nih " + Api.postAllOrder(MainActivity.this));
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+//  System.out.println("postAllOrder Result " + Api.postAllOrder(MainActivity.this));
     }
 
     @Override
@@ -95,15 +88,10 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
         }
-//        else if (item.getItemId() == R.id.item_refresh) {
-//
-//        } else if (item.getItemId() == R.id.item_edit_profile) {
-//
-//        } else if (item.getItemId() == R.id.item_logout) {
-//
-//        } else if (item.getItemId() == R.id.item_about) {
-//
-//        }
+// else if (item.getItemId() == R.id.item_refresh) {
+// } else if (item.getItemId() == R.id.item_edit_profile) {
+// } else if (item.getItemId() == R.id.item_logout) {
+// } else if (item.getItemId() == R.id.item_about) {}
         return super.onOptionsItemSelected(item);
     }
 }

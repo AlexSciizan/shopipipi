@@ -13,6 +13,8 @@
         android:descendantFocusability="blocksDescendants"
         android:fillViewport="true"
         android:focusable="true"
+        android:layout_marginBottom="20dp"
+        android:clipToPadding="false"
         android:focusableInTouchMode="true" />
 
 </FrameLayout>
